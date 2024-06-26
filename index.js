@@ -7,7 +7,7 @@ const {Anthropic} = require('@anthropic-ai/sdk');
 // app.use(express.static(__dirname));
 
 const anthropic = new Anthropic({
-  apiKey: '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', // defaults to process.env["ANTHROPIC_API_KEY"]
+  apiKey: 'aiapikeyneeded', // defaults to process.env["ANTHROPIC_API_KEY"]
 });
 
 // const msg = await anthropic.messages.create({
@@ -20,9 +20,9 @@ const anthropic = new Anthropic({
 
 // Configuration for OAuth and API clients
 const oAuth2Client = new google.auth.OAuth2(
-  '296644603313-ndm19aje45btaisa3eo0co8k5mqsrbo8.apps.googleusercontent.com',
-  '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',
-  'http://localhost:3000/auth/gmail/callback'
+  '',
+  '',
+  ''
 );
 
 const getGmailOAuthURL = () => {
@@ -126,8 +126,8 @@ const sendGmailMessage = async (from,to, subject, message) => {
 };
 
 // Outlook configuration
-const clientId = "a38aad7f-a695-4d2a-92a5-a2fac9386c82";
-const clientSecret = "1eb8Q~AO3G3eUYih7fh~MPsSaOqLj7EHL5FVJa3f";
+const clientId = "";
+const clientSecret = "";
 const redirectUri = "http://localhost:3000/auth/outlook/callback";
 const scope = 'https://graph.microsoft.com/.default';
 
