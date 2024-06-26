@@ -4,6 +4,7 @@ const express = require('express');
 const { google } = require('googleapis');
 const { Queue, Worker } = require('bullmq');
 const {Anthropic} = require('@anthropic-ai/sdk');
+// app.use(express.static(__dirname));
 
 const anthropic = new Anthropic({
   apiKey: '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', // defaults to process.env["ANTHROPIC_API_KEY"]
@@ -59,7 +60,7 @@ const generateEmailResponse = async (content) => {
   try {
     const response = await anthropic.messages.create({
         model: "claude-3-5-sonnet-20240620",
-        max_tokens: 150,
+        max_tokens: 50,
         messages: [{ role: "user", content: `Generate an email response based on the following content: "${content}"` }],
       });
   console.log( response.content[0].text);
@@ -142,24 +143,27 @@ const getOutlookOAuthURL = () => {
 
 const fetchOutlookMessages = async () => {
   try {
+    // console.log("1122");
+    // console.log(outlookTokens.access_token);
     const res = await axios.get('https://graph.microsoft.com/v1.0/me/messages', {
-      headers: { Authorization: `Bearer ${outlookTokens.access_token}` }
+      headers: { Authorization: ` ${outlookTokens.access_token}` }
     });
     return res.data.value;
   } catch (error) {
-    console.error('Error fetching Outlook messages:', error.message);
+    // console.error('Error fetching Outlook messages:', error.message);
     throw error;
   }
 };
 
 const fetchOutlookMessage = async (messageId) => {
   try {
+    
     const res = await axios.get(`https://graph.microsoft.com/v1.0/me/messages/${messageId}`, {
       headers: { Authorization: `Bearer ${outlookTokens.access_token}` }
     });
     return res.data;
   } catch (error) {
-    console.error('Error fetching Outlook message:', error.message);
+    // console.error('Error fetching Outlook message:', error.message);
     throw error;
   }
 };
@@ -253,17 +257,24 @@ const scheduleEmailChecks = async () => {
 
 const app = express();
 const port = process.env.PORT || 3000;
+app.use(express.static(__dirname));
 
 app.get('/auth/gmail', (req, res) => {
   const url = getGmailOAuthURL();
   res.redirect(url);
+});
+app.get('/',(req,res)=>{
+  res.sendFile(__dirname+"/home.html");
+
 });
 
 app.get('/auth/gmail/callback', async (req, res) => {
   const { code } = req.query;
   const { tokens } = await oAuth2Client.getToken(code);
   setGmailCredentials(tokens);
-  res.send('Gmail authenticated');
+  // res.send('Gmail authenticated');
+  res.sendFile(__dirname+"/gmail.html");
+
 });
 
 app.get('/auth/outlook', (req, res) => {
@@ -289,6 +300,7 @@ app.get('/logout', async (req, res) => {
 
 app.get('/auth/outlook/callback', async (req, res) => {
   const code = req.query.code;
+  
   const tokenUrl = 'https://login.microsoftonline.com/630534d0-a9d0-4525-a405-8841234a8713/oauth2/v2.0/token';
 
   try {
@@ -302,14 +314,42 @@ app.get('/auth/outlook/callback', async (req, res) => {
     }));
 
     outlookTokens = tokenResponse.data;
-    res.send('Outlook authenticated');
+    // console.log(outlookTokens);
+    // res.send('Outlook authenticated');
+    res.sendFile(__dirname+"/outlook.html");
+
   } catch (error) {
     console.error('Error authenticating Outlook:', error.message);
     res.status(500).send('Error authenticating Outlook');
   }
 });
+// Route to logout (clear credentials)
+// app.get('/auth/logout', async (req, res) => {
+//   if (req.session.tokens) {
+//     oAuth2Client.setCredentials(req.session.tokens);
+//     await clearGmailCredentials(); // Clear stored credentials
+//     req.session.destroy(); // Destroy the session
+//     res.sendFile(__dirname+"/home.html");
+//   } else {
+//     res.send('No active session to log out');
+//   }
+// });
+const clearGmailCredentials = () => {
+  oAuth2Client.revokeCredentials((err, response) => {
+    if (err) {
+      console.error('Error revoking credentials:', err);
+    } else {
+      console.log('Credentials revoked successfully');
+    }
+  });
+};
+app.get('/auth/logout', (req, res) => {
+  clearGmailCredentials();  
+  // res.send('Logged out from Gmail');
+  res.redirect('/');
+});
 
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`Server is running on port http://localhost:3000/`);
   scheduleEmailChecks();
 });
