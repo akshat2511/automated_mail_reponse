@@ -60,7 +60,7 @@ const generateEmailResponse = async (content) => {
   try {
     const response = await anthropic.messages.create({
         model: "claude-3-5-sonnet-20240620",
-        max_tokens: 50,
+        max_tokens: 150,
         messages: [{ role: "user", content: `Generate an email response based on the following content: "${content}"` }],
       });
   console.log( response.content[0].text);
