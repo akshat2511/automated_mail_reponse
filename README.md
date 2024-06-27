@@ -1,4 +1,3 @@
-# automated_mail_reponse
 ## Project Overview
 
 This project is an email automation system that integrates with both Gmail and Outlook to fetch, analyze, and respond to emails automatically. The system categorizes email content and generates appropriate responses based on predefined categories using the Anthropic AI. It leverages OAuth for authentication and uses BullMQ for job scheduling to periodically check for new emails.
@@ -12,6 +11,7 @@ This project is an email automation system that integrates with both Gmail and O
 - **BullMQ**: Queue system for scheduling email checks.
 - **Anthropic AI**: AI for analyzing email content and generating responses.
 - **Axios**: Promise-based HTTP client for making API requests.
+- **dotenv**: Module to load environment variables from a `.env` file.
 
 ## Routes
 
@@ -93,12 +93,25 @@ The generated responses are then sent back to the respective senders via Gmail o
    npm install
    ```
 
-3. **Run the Server**:
+3. **Environment Variables**:
+   Create a `.env` file in the root directory and add the following environment variables:
+   ```env
+   ANTHROPIC_API_KEY=<your_anthropic_api_key>
+   PORT=<port_number>
+   GMAIL_CLIENT_ID=<your_gmail_client_id>
+   GMAIL_CLIENT_SECRET=<your_gmail_client_secret>
+   GMAIL_REDIRECT_URI=<your_gmail_redirect_uri>
+   OUTLOOK_CLIENT_ID=<your_outlook_client_id>
+   OUTLOOK_CLIENT_SECRET=<your_outlook_client_secret>
+   OUTLOOK_REDIRECT_URI=<your_outlook_redirect_uri>
+   ```
+
+4. **Run the Server**:
    ```sh
    npm start
    ```
 
-4. **Access the Application**:
+5. **Access the Application**:
    Open your browser and navigate to `http://localhost:<port_number>`.
 
 This setup will get your email automation system up and running, ready to handle emails from both Gmail and Outlook.
